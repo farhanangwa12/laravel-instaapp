@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
@@ -32,7 +33,11 @@ class CommentController extends Controller
 
     public function destroy($id)
     {
-        $comment = Comment::findOrFail($id);
+        $comment = Comment::find($id);
+
+        if (!$comment) {
+            return response()->json(['message' => 'Comment not found'], 404);
+        }
         if ($comment->user_id !== auth()->id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
@@ -41,4 +46,3 @@ class CommentController extends Controller
         return response()->json(['message' => 'Comment deleted']);
     }
 }
-?>
